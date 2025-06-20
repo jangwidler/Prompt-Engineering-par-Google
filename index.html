@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering par Google - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #d1d5db;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #d1d5db;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: #93c5fd;
+            font-size: 1.2rem;
+            margin: 15px 0 10px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .principle {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .principle-header {
+            padding: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .principle-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .principle-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .principle-summary {
+            color: #d1d5db;
+            margin-top: 5px;
+        }
+
+        .principle-content {
+            padding: 0 20px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .principle-content.show {
+            display: block;
+        }
+
+        .example {
+            background: rgba(30, 58, 138, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .quiz-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .quiz-question {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-question:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .quiz-number {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .quiz-answer {
+            padding: 0 15px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .quiz-answer.show {
+            display: block;
+        }
+
+        .answer-box {
+            background: rgba(5, 46, 22, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .error-card, .good-card {
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .error-card {
+            background: rgba(153, 27, 27, 0.2);
+        }
+
+        .good-card {
+            background: rgba(5, 46, 22, 0.2);
+        }
+
+        .error-title {
+            color: #fca5a5;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .good-title {
+            color: #86efac;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #d1d5db;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .tabs { flex-direction: column; }
+            .tab-btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Prompt Engineering par Google</h1>
+            <p>Dashboard interactif - Framework TCREI et techniques avancées</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'auteur')">Auteur</button>
+            <button class="tab-btn" onclick="openTab(event, 'vue-ensemble')">Vue d'ensemble</button>
+            <button class="tab-btn" onclick="openTab(event, 'principes')">Principes TCREI</button>
+            <button class="tab-btn" onclick="openTab(event, 'erreurs')">Erreurs à éviter</button>
+            <button class="tab-btn" onclick="openTab(event, 'bonnes-pratiques')">Bonnes pratiques</button>
+            <button class="tab-btn" onclick="openTab(event, 'pratique')">Mise en pratique</button>
+            <button class="tab-btn" onclick="openTab(event, 'quiz')">Quiz</button>
+        </div>
+
+        <!-- Auteur -->
+        <div id="auteur" class="tab-content active">
+            <div class="card">
+                <h2>À propos de cette formation</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Source</h3>
+                        <p>Formation officielle de Google sur le Prompt Engineering</p>
+                    </div>
+                    <div>
+                        <h3>Organisme</h3>
+                        <p>Google DeepMind - Équipe de recherche en Intelligence Artificielle</p>
+                    </div>
+                    <div>
+                        <h3>Validation</h3>
+                        <p>Techniques validées par des études démontrant l'efficacité du méta-prompting</p>
+                    </div>
+                    <div>
+                        <h3>Expertise</h3>
+                        <p>Développée par les ingénieurs IA de Google, confirme l'importance du persona</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue d'ensemble -->
+        <div id="vue-ensemble" class="tab-content">
+            <div class="card">
+                <h2>Vue d'ensemble</h2>
+                <div class="grid">
+                    <div>
+                        <h3>Modules</h3>
+                        <p>• Module 1: Framework TCREI<br>
+                        • Module 2: Intégration quotidienne<br>
+                        • Module 3: Techniques avancées<br>
+                        • Module 4: Agents d'IA</p>
+                    </div>
+                    <div>
+                        <h3>Méthodes avancées</h3>
+                        <p>• Chaînage de prompt<br>
+                        • Arbre de pensée<br>
+                        • Méta prompting<br>
+                        • Chaîne de densité</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Définition selon Google</h3>
+                <p style="font-style: italic;">"Le prompt engineering est une stratégie, un art et une science qui consiste à fournir des instructions spécifiques à des outils d'IA générative."</p>
+            </div>
+
+            <div class="card">
+                <h3>6 familles de tâches IA</h3>
+                <div class="grid">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Rédiger</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Brainstormer</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Analyser</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Créer du contenu</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Créer des rapports</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">Planifier</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Principes -->
+        <div id="principes" class="tab-content">
+            <div class="card">
+                <h2>Framework TCREI</h2>
+                <p>Cliquez sur chaque principe pour les détails</p>
+            </div>
+            
+            <div class="principle">
+                <div class="principle-header" onclick="toggleContent('tache')">
+                    <div class="principle-title">T - Tâche</div>
+                    <div class="principle-summary">Décrire précisément l'objectif</div>
+                </div>
+                <div id="tache" class="principle-content">
+                    <p><strong>Description:</strong> Pour décrire efficacement une tâche, deux éléments sont essentiels: le persona et le format.</p>
+                    <p><strong>Éléments clés:</strong></p>
+                    <ul>
+                        <li>Le persona: Attribuer un rôle à l'IA</li>
+                        <li>Le format: Spécifier les caractéristiques attendues</li>
+                    </ul>
+                    <div class="example">
+                        <strong>💡 Exemple:</strong>
+                        <p>Au lieu de "Trouve des idées de cadeaux", utilisez: "Agis comme un conseiller spécialisé en cadeaux tech pour un homme de 30 ans. Présente 5 idées en tableau avec prix."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="principle">
+                <div class="principle-header" onclick="toggleContent('contexte')">
+                    <div class="principle-title">C - Contexte</div>
+                    <div class="principle-summary">Donner des informations pertinentes</div>
+                </div>
+                <div id="contexte" class="principle-content">
+                    <p><strong>Description:</strong> Plus on donne de détails à l'IA, meilleure sera sa réponse.</p>
+                    <p><strong>Éléments clés:</strong></p>
+                    <ul>
+                        <li>Budget: Préciser votre budget</li>
+                        <li>Profil: Détails sur le destinataire</li>
+                        <li>Délais: Mentionner vos contraintes</li>
+                    </ul>
+                    <div class="example">
+                        <strong>💡 Exemple:</strong>
+                        <p>Contexte enrichi: "Budget 70€, freelance en finance, passionné de course, délai 2 jours"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="principle">
+                <div class="principle-header" onclick="toggleContent('reference')">
+                    <div class="principle-title">R - Référence</div>
+                    <div class="principle-summary">Fournir des exemples concrets</div>
+                </div>
+                <div id="reference" class="principle-content">
+                    <p><strong>Description:</strong> Few-shot prompting: donner 3-5 exemples pour guider l'IA.</p>
+                    <p><strong>Éléments clés:</strong></p>
+                    <ul>
+                        <li>Few-shot: 3-5 exemples</li>
+                        <li>One-shot: 1 exemple</li>
+                        <li>Zero-shot: aucun exemple</li>
+                    </ul>
+                    <div class="example">
+                        <strong>💡 Exemple:</strong>
+                        <p>Donnez 2-3 exemples du style souhaité pour guider l'IA dans sa réflexion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="principle">
+                <div class="principle-header" onclick="toggleContent('evaluer')">
+                    <div class="principle-title">E - Évaluer</div>
+                    <div class="principle-summary">Analyser les résultats obtenus</div>
+                </div>
+                <div id="evaluer" class="principle-content">
+                    <p><strong>Description:</strong> L'évaluation est essentielle pour progresser.</p>
+                    <p><strong>Éléments clés:</strong></p>
+                    <ul>
+                        <li>Dialogue continu jusqu'à satisfaction</li>
+                        <li>Méta-prompting: optimiser le prompt</li>
+                        <li>Mindset d'amélioration continue</li>
+                    </ul>
+                    <div class="example">
+                        <strong>💡 Exemple:</strong>
+                        <p>Après un bon résultat, demandez: "Quel prompt aurait donné ce résultat du premier coup?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="principle">
+                <div class="principle-header" onclick="toggleContent('iterer')">
+                    <div class="principle-title">I - Itérer</div>
+                    <div class="principle-summary">Améliorer progressivement</div>
+                </div>
+                <div id="iterer" class="principle-content">
+                    <p><strong>Description:</strong> Google recommande "Always Be Iterating" (ABI).</p>
+                    <p><strong>Éléments clés:</strong></p>
+                    <ul>
+                        <li>Optimiser le framework</li>
+                        <li>Phrases plus courtes</li>
+                        <li>Tâches analogues</li>
+                        <li>Ajouter des contraintes</li>
+                    </ul>
+                    <div class="example">
+                        <strong>💡 Exemple:</strong>
+                        <p>Au lieu de "discours commercial", essayez "histoire percutante" pour un résultat créatif.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Erreurs -->
+        <div id="erreurs" class="tab-content">
+            <div class="card">
+                <h2>🚫 Erreurs à éviter</h2>
+                
+                <div class="error-card">
+                    <div class="error-title">Prompts trop vagues</div>
+                    <p>❌ "Trouve des idées de cadeaux"<br>
+                    ✅ "Agis comme conseiller tech, budget 70€, homme 30 ans"</p>
+                </div>
+                
+                <div class="error-card">
+                    <div class="error-title">Phrases trop longues</div>
+                    <p>❌ Paragraphe complexe avec plusieurs instructions<br>
+                    ✅ Instructions courtes et séparées</p>
+                </div>
+                
+                <div class="error-card">
+                    <div class="error-title">Absence d'exemples</div>
+                    <p>Zero-shot quand des exemples amélioreraient le résultat</p>
+                </div>
+                
+                <div class="error-card">
+                    <div class="error-title">Manque de contexte</div>
+                    <p>Omettre budget, délais, public cible, contraintes</p>
+                </div>
+                
+                <div class="error-card">
+                    <div class="error-title">Ne pas itérer</div>
+                    <p>Se contenter du premier résultat sans optimiser</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bonnes pratiques -->
+        <div id="bonnes-pratiques" class="tab-content">
+            <div class="card">
+                <h2>✅ Bonnes pratiques</h2>
+                
+                <div class="grid">
+                    <div>
+                        <div class="good-card">
+                            <div class="good-title">Structure</div>
+                            <ol>
+                                <li>Définir le persona</li>
+                                <li>Présenter le contexte</li>
+                                <li>Instructions point par point</li>
+                                <li>Préciser le format</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="good-card">
+                            <div class="good-title">Délimitateurs</div>
+                            <p>### PERSONA ###, ### CONTEXTE ###</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="good-card">
+                            <div class="good-title">Few-shot</div>
+                            <p>3-5 exemples pour guider l'IA</p>
+                        </div>
+                        
+                        <div class="good-card">
+                            <div class="good-title">Always Be Iterating</div>
+                            <p>Amélioration continue des prompts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(30, 58, 138, 0.3); border-radius: 12px; padding: 20px; margin-top: 20px;">
+                    <h3 style="color: #93c5fd; margin-bottom: 15px;">📊 Statistiques</h3>
+                    <div class="stats">
+                        <div>
+                            <div class="stat-number">42%</div>
+                            <div class="stat-label">Amélioration avec contexte</div>
+                        </div>
+                        <div>
+                            <div class="stat-number">3x</div>
+                            <div class="stat-label">Précision multipliée</div>
+                        </div>
+                        <div>
+                            <div class="stat-number">78%</div>
+                            <div class="stat-label">Satisfaction utilisateur</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pratique -->
+        <div id="pratique" class="tab-content">
+            <div class="card">
+                <h2>🎯 Mise en pratique</h2>
+                
+                <div class="good-card" style="margin-bottom: 20px;">
+                    <h3 style="color: #93c5fd; margin-bottom: 15px;">1. Identifier vos besoins</h3>
+                    <p style="margin-bottom: 15px;">Tableau 3 colonnes :</p>
+                    <div class="grid">
+                        <div style="background: rgba(153, 27, 27, 0.2); border-radius: 8px; padding: 15px; text-align: center;">
+                            <strong style="color: #fca5a5;">Tâches détestées</strong>
+                        </div>
+                        <div style="background: rgba(133, 77, 14, 0.2); border-radius: 8px; padding: 15px; text-align: center;">
+                            <strong style="color: #fcd34d;">Tâches trop longues</strong>
+                        </div>
+                        <div style="background: rgba(5, 46, 22, 0.2); border-radius: 8px; padding: 15px; text-align: center;">
+                            <strong style="color: #86efac;">Tâches souhaitées</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="good-card" style="margin-bottom: 20px;">
+                    <h3 style="color: #93c5fd; margin-bottom: 15px;">2. Techniques avancées</h3>
+                    <div style="border-left: 4px solid #a855f7; padding-left: 15px; margin-bottom: 15px;">
+                        <strong style="color: #c084fc;">Chaînage</strong>
+                        <p>Diviser en étapes : idées → titre → trame → rédaction</p>
+                    </div>
+                    <div style="border-left: 4px solid #ec4899; padding-left: 15px;">
+                        <strong style="color: #f9a8d4;">Arbre de pensée</strong>
+                        <p>4 phases : Brainstorming → Évaluation → Exploration → Décision</p>
+                    </div>
+                </div>
+                
+                <div class="good-card">
+                    <h3 style="color: #93c5fd; margin-bottom: 15px;">3. Exemples pratiques</h3>
+                    <div style="background: rgba(30, 58, 138, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                        <strong style="color: #93c5fd;">Email professionnel</strong>
+                        <p style="font-size: 0.9rem;">Contexte + Tâche + Format = Email optimisé</p>
+                    </div>
+                    <div style="background: rgba(5, 46, 22, 0.3); border-radius: 8px; padding: 15px;">
+                        <strong style="color: #86efac;">Brainstorming marketing</strong>
+                        <p style="font-size: 0.9rem;">Persona + Contexte = Timeline de lancement détaillée</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz -->
+        <div id="quiz" class="tab-content">
+            <div class="card">
+                <h2>📝 Quiz - 30 Questions</h2>
+                <p>Cliquez sur une question pour révéler la réponse</p>
+            </div>
+            
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q1')">
+                    <div><span class="quiz-number">Q1</span><span>Que signifie TCREI ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q1" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Tâche, Contexte, Référence, Évaluer, Itérer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q2')">
+                    <div><span class="quiz-number">Q2</span><span>Combien d'exemples Google recommande pour le few-shot ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q2" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Entre 3 et 5 exemples</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q3')">
+                    <div><span class="quiz-number">Q3</span><span>Quels sont les 2 éléments essentiels d'une tâche ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q3" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Le persona et le format</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q4')">
+                    <div><span class="quiz-number">Q4</span><span>Quelle est la cause principale des hallucinations selon Google ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q4" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Prompts mal rédigés, manque de contexte</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q5')">
+                    <div><span class="quiz-number">Q5</span><span>Que signifie ABI ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q5" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Always Be Iterating</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q6')">
+                    <div><span class="quiz-number">Q6</span><span>Qu'est-ce que le chaînage de prompt ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q6" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Diviser une tâche complexe en sous-tâches</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q7')">
+                    <div><span class="quiz-number">Q7</span><span>Définition du méta-prompting ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q7" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Utiliser l'IA pour optimiser vos prompts</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q8')">
+                    <div><span class="quiz-number">Q8</span><span>Phrase mnémotechnique pour TCREI ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q8" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Toujours Créer des Requêtes Excellentes et Inspirées</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q9')">
+                    <div><span class="quiz-number">Q9</span><span>Qu'est-ce que Chain of Thought ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q9" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Demander à l'IA d'expliquer son raisonnement</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q10')">
+                    <div><span class="quiz-number">Q10</span><span>Combien de phases dans l'arbre de pensée ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q10" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>4 phases: Brainstorming, Évaluation, Exploration, Décision</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q11')">
+                    <div><span class="quiz-number">Q11</span><span>Que sont les GMs ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q11" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Gemini Models, équivalent des GPTs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q12')">
+                    <div><span class="quiz-number">Q12</span><span>Amélioration moyenne avec contexte détaillé ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q12" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>42% d'amélioration</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q13')">
+                    <div><span class="quiz-number">Q13</span><span>Combien de familles de tâches IA ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q13" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>6: Rédiger, Brainstormer, Analyser, Créer, Rapporter, Planifier</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q14')">
+                    <div><span class="quiz-number">Q14</span><span>Qu'est-ce que la chaîne de densité ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q14" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Technique de résumé en 5 étapes successives</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q15')">
+                    <div><span class="quiz-number">Q15</span><span>Comment éviter la confusion dans les prompts ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q15" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Phrases courtes et séparées</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q16')">
+                    <div><span class="quiz-number">Q16</span><span>Délimitateurs recommandés ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q16" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>###, ---, ou autres séparateurs visuels</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q17')">
+                    <div><span class="quiz-number">Q17</span><span>Que signifie 'human in the loop' ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q17" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Contrôle humain des résultats IA</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q18')">
+                    <div><span class="quiz-number">Q18</span><span>Qu'est-ce que le shadow prompting ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q18" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Usage non encadré de l'IA en entreprise</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q19')">
+                    <div><span class="quiz-number">Q19</span><span>Définition du prompt engineering selon Google ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q19" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Art et science de fournir des instructions spécifiques à l'IA</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q20')">
+                    <div><span class="quiz-number">Q20</span><span>Que faire après un résultat parfait ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q20" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Demander le prompt optimal via méta-prompting</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q21')">
+                    <div><span class="quiz-number">Q21</span><span>Éléments du prompting multimodal ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q21" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Taille, format, couleurs, style, position</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q22')">
+                    <div><span class="quiz-number">Q22</span><span>Comment commencer l'intégration IA ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q22" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Tableau 3 colonnes: n'aime pas / trop long / voudrait faire</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q23')">
+                    <div><span class="quiz-number">Q23</span><span>Approche pour tâches analogues ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q23" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Reformuler pour même objectif, résultat différent</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q24')">
+                    <div><span class="quiz-number">Q24</span><span>Agents IA selon Google ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q24" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Outils de simulation pour apprentissage</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q25')">
+                    <div><span class="quiz-number">Q25</span><span>Multiplication de précision avec contexte ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q25" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>3x la précision</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q26')">
+                    <div><span class="quiz-number">Q26</span><span>Taux de satisfaction avec contexte complet ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q26" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>78%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q27')">
+                    <div><span class="quiz-number">Q27</span><span>Qu'est-ce que Promptor ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q27" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Outil 3 étapes: jet, critique, version finale</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q28')">
+                    <div><span class="quiz-number">Q28</span><span>Que ne pas partager avec l'IA ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q28" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Informations confidentielles</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q29')">
+                    <div><span class="quiz-number">Q29</span><span>Structure recommandée d'un prompt complexe ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q29" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Persona → Contexte → Instructions → Format</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-item">
+                <div class="quiz-question" onclick="toggleQuiz('q30')">
+                    <div><span class="quiz-number">Q30</span><span>Principe clé selon Google ?</span></div>
+                    <span>▼</span>
+                </div>
+                <div id="q30" class="quiz-answer">
+                    <div class="answer-box">
+                        <strong style="color: #86efac;">✓ Réponse :</strong>
+                        <p>Construire une librairie et Always Be Iterating</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Félicitations -->
+            <div style="background: rgba(30, 58, 138, 0.2); border-radius: 15px; padding: 25px; text-align: center; margin-top: 30px;">
+                <h3 style="color: #93c5fd; margin-bottom: 10px;">🎓 Félicitations !</h3>
+                <p>Vous maîtrisez maintenant le prompt engineering selon Google avec le framework TCREI !</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbtn;
+            
+            // Cacher tous les contenus
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            // Retirer active de tous les boutons
+            tabbtn = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tabbtn.length; i++) {
+                tabbtn[i].classList.remove("active");
+            }
+            
+            // Afficher le contenu sélectionné et activer le bouton
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function toggleContent(id) {
+            var content = document.getElementById(id);
+            if (content.classList.contains("show")) {
+                content.classList.remove("show");
+            } else {
+                content.classList.add("show");
+            }
+        }
+
+        function toggleQuiz(id) {
+            var answer = document.getElementById(id);
+            if (answer.classList.contains("show")) {
+                answer.classList.remove("show");
+            } else {
+                answer.classList.add("show");
+            }
+        }
+    </script>
+</body>
+</html>
